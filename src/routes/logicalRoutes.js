@@ -1,45 +1,61 @@
-//Logical Operator are:or,and,not,nor
-// $and:Joins query clauses with a logical AND returns all documents that match the conditions of both clauses.
-// $not:Inverts the effect of a query expression and returns documents that do not match the query expression.
-// $nor:Joins query clauses with a logical NOR returns all documents that fail to match both clauses.
-// $or:Joins query clauses with a logical OR returns all documents that match the conditions of either clause.
+const express = require('express');
+const router = express.Router();
+const User = require('../models/userModel'); // Import the user model
 
-const router = require('express').Router();
-const User = require('../models/userModel');
-
-//will return those user whose age is 20 or username is admin
+// 1. Route for $or: Find users with age 20 or username 'admin'
 router.get('/or', async (req, res) => {
   try {
-    //write your code here for or operator
+    const users = await User.find({
+      $or: [{ age: 20 }, { username: 'admin' }]
+    });
+
+    res.status(200).json(users);
   } catch (error) {
-    res.status(404).send(error);
+    console.error('Error fetching users with $or:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-//will return those users whose age is 20 and username is admin
+// 2. Route for $and: Find users with age 20 and username 'admin'
 router.get('/and', async (req, res) => {
   try {
-    //write your code here for and operator
+    const users = await User.find({
+      $and: [{ age: 20 }, { username: 'admin' }]
+    });
+
+    res.status(200).json(users);
   } catch (error) {
-    res.status(404).send(error);
+    console.error('Error fetching users with $and:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-//It will give all the users that's age is not greater than 20. Basically it will return the users which has a age less than 20
+// 3. Route for $not: Find users whose age is not less than or equal to 30
 router.get('/not', async (req, res) => {
   try {
-    //write your code here for not operator
+    const users = await User.find({
+      age: { $not: { $lte: 30 } }
+    });
+
+    res.status(200).json(users);
   } catch (error) {
-    res.status(404).send(error);
+    console.error('Error fetching users with $not:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-//It will return all the users except those users whose age is either 20 or the username is admin
+// 4. Route for $nor: Find users whose age is not 20 and username is not 'admin'
 router.get('/nor', async (req, res) => {
   try {
-    //write your code here for nor operator
+    const users = await User.find({
+      $nor: [{ age: 20 }, { username: 'admin' }]
+    });
+
+    res.status(200).json(users);
   } catch (error) {
-    res.status(404).send(error);
+    console.error('Error fetching users with $nor:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 module.exports = router;
